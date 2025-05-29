@@ -10,7 +10,6 @@ import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
 import io.urdego.urdego_user_service.api.user.dto.response.UserSimpleResponse;
 import io.urdego.urdego_user_service.common.enums.PlatformType;
 import io.urdego.urdego_user_service.domain.entity.User;
-import io.urdego.urdego_user_service.domain.entity.UserInfoCache;
 import io.urdego.urdego_user_service.domain.repository.GameCharacterRepository;
 import io.urdego.urdego_user_service.domain.repository.UserCharacterRepository;
 import io.urdego.urdego_user_service.domain.repository.UserRepository;
@@ -42,7 +41,7 @@ public class UserServiceImpl implements UserService {
 
 	private final UserCharacterReader userCharacterReader;
 	private final UserCharacterCommander userCharacterCommander;
-	private final UserCachManager userCachManager;
+	private final UserCacheManager userCacheManager;
 
 	@Override
 	public UserResponse saveUser(UserSignUpRequest userSignUpRequest) {
@@ -63,8 +62,7 @@ public class UserServiceImpl implements UserService {
 		}
 		// 신규 회원가입
 		User newUser = userCommander.signUp(userSignUpRequest);
-		UserInfoCache userInfo = UserInfoCache.createUserInfo(newUser);
-		userCachManager.cachingUserInfo(newUser.getId(),userInfo);
+		userCacheManager.cacheUserInfo(newUser.getId(),newUser);
 		return UserResponse.from(newUser);
 	}
 

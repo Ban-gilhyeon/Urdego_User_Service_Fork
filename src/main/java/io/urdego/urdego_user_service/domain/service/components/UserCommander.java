@@ -29,7 +29,7 @@ public class UserCommander {
     private final UserValidator userValidator;
     private final UserCharacterCommander userCharacterCommander;
     private final LevelManager levelManager;
-    private final UserCachManager userCachManager;
+    private final UserCacheManager userCacheManager;
 
     public void save(User user) {
         userRepository.save(user);
