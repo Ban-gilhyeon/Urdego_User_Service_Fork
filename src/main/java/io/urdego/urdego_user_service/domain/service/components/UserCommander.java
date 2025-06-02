@@ -45,9 +45,9 @@ public class UserCommander {
         User newUser = User.create(userSignUpRequest,nicknameNumber);
 
         UserCharacter userCharacter = userCharacterCommander.initActiveCharacter(newUser);
-
         userRepository.save(newUser);
         userCharacterRepository.save(userCharacter);
+        userCacheManager.cacheUserInfo(newUser.getId(),newUser);
 
         return newUser;
     }

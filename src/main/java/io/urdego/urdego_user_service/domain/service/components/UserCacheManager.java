@@ -15,13 +15,16 @@ import java.util.Optional;
 @Slf4j
 public class UserCacheManager {
     private final RedisTemplate<String, Object> redisTemplate;
+    private final UserReader userReader;
     private static final Duration TTL = Duration.ofMinutes(30);
 
     private String generateKey(Long userId){
         return "urdego_user:" + userId;
     }
-    public void cacheUserInfo(Long userId, User user){
+
+    public void cacheUserInfo(Long userId){
         String key = generateKey(userId);
+        User user = userReader.readByUserId(userId);
         CachedUserInfo userInfo = CachedUserInfo.createUserInfo(user);
         redisTemplate.opsForValue().set(key, userInfo, TTL);
     }
@@ -35,7 +38,7 @@ public class UserCacheManager {
         return Optional.empty();
     }
 
-    public void updateCache(){
-
+    public void deleteCache(Long userId){
+        redisTemplate.delete(generateKey(userId));
     }
 }

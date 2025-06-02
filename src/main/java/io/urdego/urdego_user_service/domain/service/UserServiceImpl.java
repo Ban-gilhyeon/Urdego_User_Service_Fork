@@ -62,7 +62,6 @@ public class UserServiceImpl implements UserService {
 		}
 		// 신규 회원가입
 		User newUser = userCommander.signUp(userSignUpRequest);
-		userCacheManager.cacheUserInfo(newUser.getId(),newUser);
 		return UserResponse.from(newUser);
 	}
 
