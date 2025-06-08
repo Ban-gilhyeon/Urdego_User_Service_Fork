@@ -4,11 +4,14 @@ import ai.onnxruntime.OrtException;
 import io.urdego.urdego_user_service.api.user.dto.request.ExpRequest;
 import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
 import io.urdego.urdego_user_service.api.user.dto.response.LevelResponse;
+import io.urdego.urdego_user_service.domain.events.UserRegisteredEvent;
+import io.urdego.urdego_user_service.domain.events.UserUpdatedEvent;
 import io.urdego.urdego_user_service.domain.entity.User;
 import io.urdego.urdego_user_service.domain.entity.UserCharacter;
 import io.urdego.urdego_user_service.domain.repository.GameCharacterRepository;
 import io.urdego.urdego_user_service.domain.repository.UserCharacterRepository;
 import io.urdego.urdego_user_service.domain.repository.UserRepository;
+import io.urdego.urdego_user_service.domain.service.UserEventHandler;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,13 +32,13 @@ public class UserCommander {
     private final UserValidator userValidator;
     private final UserCharacterCommander userCharacterCommander;
     private final LevelManager levelManager;
-    private final UserCacheManager userCacheManager;
+    private final UserEventHandler eventHandler;
 
     public void save(User user) {
         userRepository.save(user);
     }
 
-    public void saveAll(List<User> users) {
+    private void saveAll(List<User> users) {
         userRepository.saveAll(users);
     }
 
@@ -45,10 +48,10 @@ public class UserCommander {
         User newUser = User.create(userSignUpRequest,nicknameNumber);
 
         UserCharacter userCharacter = userCharacterCommander.initActiveCharacter(newUser);
-        userRepository.save(newUser);
+        save(newUser);
         userCharacterRepository.save(userCharacter);
-        userCacheManager.cacheUserInfo(newUser.getId(),newUser);
 
+        eventHandler.handleUserRegistered(new UserRegisteredEvent(newUser.getId()));
         return newUser;
     }
 
@@ -59,6 +62,7 @@ public class UserCommander {
         existingUser.updateNickname(userSignUpRequest.nickname() +"#"+nicknameNumber);
         userCharacterCommander.initActiveCharacter(existingUser);
         save(existingUser);
+        eventHandler.handleUserRegistered(new UserRegisteredEvent(existingUser.getId()));
         return existingUser;
     }
 
@@ -71,13 +75,12 @@ public class UserCommander {
         log.info("real nickname : {}", user.getNickname());
         user.updateNickname(newNickname);
         save(user);
+        eventHandler.handleUserUpdated(new UserUpdatedEvent(user.getId()));
         return user;
     }
 
     // 회원가입 시 닉네임 넘버링
     private Long countDuplicatedNickname(String nickname){
-        //List<User> userList = userReader.findByName(nickname);
-        //int nicknameNumber = userList.size() + 1;
         Long nicknameNumber = userReader.countByName(nickname);
         return nicknameNumber;
     }
@@ -109,6 +112,7 @@ public class UserCommander {
             updateUserList.add(user);
             LevelResponse response = LevelResponse.from(user,isLevelUp);
             responses.add(response);
+            eventHandler.handleUserUpdated(new UserUpdatedEvent(user.getId()));
         }
         saveAll(updateUserList);
         return responses;

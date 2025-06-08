@@ -7,10 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.urdego.urdego_user_service.api.user.dto.request.*;
-import io.urdego.urdego_user_service.api.user.dto.response.LevelResponse;
-import io.urdego.urdego_user_service.api.user.dto.response.UserCharacterResponse;
-import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
-import io.urdego.urdego_user_service.api.user.dto.response.UserSimpleResponse;
+import io.urdego.urdego_user_service.api.user.dto.response.*;
 import io.urdego.urdego_user_service.domain.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -151,13 +148,12 @@ public class UserController {
 		return ResponseEntity.ok().body(userService.readUserInfo(userId));
 	}
 
-/*
 	//Test API
-	@PostMapping("/users/profane/check")
-	public boolean isProfane(@RequestBody BadWordTestRequest request)throws OrtException {
-		return userService.isProfane(request.testText());
+	@GetMapping("/users/cached/{userId}")
+	public ResponseEntity<UserCachedInfoResponse> getCachedUserInfo(@PathVariable Long userId){
+		return ResponseEntity.ok().body(userService.getCachedUserInfo(userId));
 	}
-*/
+
 
 
 }

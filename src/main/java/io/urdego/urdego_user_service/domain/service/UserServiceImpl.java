@@ -4,12 +4,11 @@ import ai.onnxruntime.OrtException;
 import io.urdego.urdego_user_service.api.user.dto.request.ChangeCharacterRequest;
 import io.urdego.urdego_user_service.api.user.dto.request.ExpRequest;
 import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
-import io.urdego.urdego_user_service.api.user.dto.response.LevelResponse;
-import io.urdego.urdego_user_service.api.user.dto.response.UserCharacterResponse;
-import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
-import io.urdego.urdego_user_service.api.user.dto.response.UserSimpleResponse;
+import io.urdego.urdego_user_service.api.user.dto.response.*;
 import io.urdego.urdego_user_service.common.enums.PlatformType;
+import io.urdego.urdego_user_service.common.exception.user.NotFoundUserException;
 import io.urdego.urdego_user_service.domain.entity.User;
+import io.urdego.urdego_user_service.domain.entity.dto.CachedUserInfo;
 import io.urdego.urdego_user_service.domain.repository.GameCharacterRepository;
 import io.urdego.urdego_user_service.domain.repository.UserCharacterRepository;
 import io.urdego.urdego_user_service.domain.repository.UserRepository;
@@ -19,7 +18,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -73,13 +74,26 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserSimpleResponse readUserInfo(Long userId) {
-		User user = userReader.readByUserId(userId);
-		return UserSimpleResponse.from(user);
+		//User user = userReader.readByUserId(userId);
+		return UserSimpleResponse.from(userCacheManager.getUserInfo(userId)
+				.orElseGet(()-> {
+					User user = userReader.readByUserId(userId);
+					userCacheManager.cacheUserInfo(userId);
+					return CachedUserInfo.createUserInfo(user);
+				}));
 	}
 
 	@Override
 	public List<UserSimpleResponse> readUserInfoList(List<Long> userIds) {
-		return userReader.readAlltoList(userIds);
+		/*return userCacheManager.getUserInfoToList(userIds).stream()
+				.map(UserSimpleResponse::from)
+				.collect(Collectors.toList());*/
+		//@TODO 단일 조회의 경우 캐시 미스 상황일 때 처리를 하였지만 리스트 조회일 때는 어떻게 해야되지?
+		List<UserSimpleResponse> responses = new ArrayList<>();
+		List<CachedUserInfo> userInfos = userCacheManager.getUserInfoToList(userIds);
+		return userInfos.stream()
+				.map(UserSimpleResponse::from)
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -121,5 +135,13 @@ public class UserServiceImpl implements UserService {
 	public List<LevelResponse> addExp(List<ExpRequest> requests) {
 		List<LevelResponse> responses = userCommander.saveExp(requests);
 		return responses;
+	}
+
+	@Override
+	public UserCachedInfoResponse getCachedUserInfo(Long userId) {
+		CachedUserInfo userInfo = userCacheManager.getUserInfo(userId).orElseThrow(
+				()-> NotFoundUserException.EXCEPTION
+		);
+		return UserCachedInfoResponse.from(userInfo);
 	}
 }

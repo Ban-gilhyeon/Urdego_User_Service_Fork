@@ -1,6 +1,5 @@
 package io.urdego.urdego_user_service.domain.service.components;
 
-import io.urdego.urdego_user_service.api.user.dto.response.UserSimpleResponse;
 import io.urdego.urdego_user_service.common.enums.PlatformType;
 import io.urdego.urdego_user_service.common.exception.user.NotFoundUserException;
 import io.urdego.urdego_user_service.common.exception.user.NotFoundUserNicknameException;
@@ -10,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -18,10 +16,6 @@ import java.util.List;
 @Slf4j
 public class UserReader {
     private final UserRepository userRepository;
-
-  /*  public List<User> findByName(String nickname){
-        return userRepository.findByName(nickname);
-    }*/
 
     public Long countByName(String nickname){
         return userRepository.countByName(nickname);
@@ -47,6 +41,10 @@ public class UserReader {
                 .orElseThrow(()-> NotFoundUserNicknameException.EXCEPTION);
     }
 
+    public List<User> findByIds(List<Long> userIds){
+        return userRepository.findAllById(userIds);
+    }
+/*
     public List<UserSimpleResponse> readAlltoList(List<Long> userIds) {
         List<User> users = userRepository.findAllById(userIds);
         List<UserSimpleResponse> responses = new ArrayList<>();
@@ -56,6 +54,8 @@ public class UserReader {
         }
         return responses;
     }
+*/
+
 
     // boolean
     public boolean existsByEmailAndPlatformType(String email, PlatformType platformType) {
@@ -65,4 +65,16 @@ public class UserReader {
     public boolean existsByNicknameAndIsDeletedFalse(String nickname) {
         return userRepository.existsByNicknameAndIsDeletedFalse(nickname);
     }
+
+    /*//Read User Information By Redis Cached
+    public CachedUserInfo readCachedUserInfo(Long userId){
+        CachedUserInfo userInfo = cacheManager.getUserInfo(userId).orElseThrow(
+                ()->NotFoundUserException.EXCEPTION
+        );
+        return userInfo;
+    }
+    public List<CachedUserInfo> readCachedUserInfoToList(List<Long> userIds){
+        List<CachedUserInfo> results = cacheManager.getUserInfoToList(userIds);
+        return results;
+    }*/
 }

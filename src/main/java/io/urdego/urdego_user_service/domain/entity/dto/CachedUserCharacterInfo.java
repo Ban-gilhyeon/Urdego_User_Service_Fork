@@ -12,12 +12,12 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CachedUserCharacterInfo {
     private Long userId;
-    private String CharacterName;
+    private String characterName;
 
     public static CachedUserCharacterInfo createdCachedUserCharacterInfo(UserCharacter userCharacter){
         return CachedUserCharacterInfo.builder()
                 .userId(userCharacter.getUserCharacterPK().getUserId())
-                .CharacterName(userCharacter.getCharacter().getName())
+                .characterName(userCharacter.getCharacter().getName())
                 .build();
     }
 }

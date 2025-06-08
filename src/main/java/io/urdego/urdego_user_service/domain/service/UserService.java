@@ -4,10 +4,7 @@ import ai.onnxruntime.OrtException;
 import io.urdego.urdego_user_service.api.user.dto.request.ChangeCharacterRequest;
 import io.urdego.urdego_user_service.api.user.dto.request.ExpRequest;
 import io.urdego.urdego_user_service.api.user.dto.request.UserSignUpRequest;
-import io.urdego.urdego_user_service.api.user.dto.response.LevelResponse;
-import io.urdego.urdego_user_service.api.user.dto.response.UserCharacterResponse;
-import io.urdego.urdego_user_service.api.user.dto.response.UserResponse;
-import io.urdego.urdego_user_service.api.user.dto.response.UserSimpleResponse;
+import io.urdego.urdego_user_service.api.user.dto.response.*;
 import io.urdego.urdego_user_service.domain.entity.User;
 import io.urdego.urdego_user_service.domain.entity.UserCharacter;
 
@@ -42,4 +39,6 @@ public interface UserService {
 	List<UserResponse> searchByWord(String word);
 
 	List<LevelResponse> addExp(List<ExpRequest> requests);
+
+	UserCachedInfoResponse getCachedUserInfo(Long userId);
 }
