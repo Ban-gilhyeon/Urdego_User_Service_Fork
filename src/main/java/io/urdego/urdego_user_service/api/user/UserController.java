@@ -148,6 +148,11 @@ public class UserController {
 		return ResponseEntity.ok().body(userService.readUserInfo(userId));
 	}
 
+	@GetMapping("/users/test/{userId}")
+	public ResponseEntity<UserSimpleResponse> getTestUser(@PathVariable Long userId){
+		return ResponseEntity.ok().body(userService.readUserTest(userId));
+	}
+
 	//Test API
 	@GetMapping("/users/cached/{userId}")
 	public ResponseEntity<UserCachedInfoResponse> getCachedUserInfo(@PathVariable Long userId){

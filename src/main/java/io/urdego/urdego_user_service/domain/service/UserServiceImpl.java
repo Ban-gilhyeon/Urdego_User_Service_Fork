@@ -88,7 +88,6 @@ public class UserServiceImpl implements UserService {
 		/*return userCacheManager.getUserInfoToList(userIds).stream()
 				.map(UserSimpleResponse::from)
 				.collect(Collectors.toList());*/
-		//@TODO 단일 조회의 경우 캐시 미스 상황일 때 처리를 하였지만 리스트 조회일 때는 어떻게 해야되지?
 		List<UserSimpleResponse> responses = new ArrayList<>();
 		List<CachedUserInfo> userInfos = userCacheManager.getUserInfoToList(userIds);
 		return userInfos.stream()
@@ -143,5 +142,12 @@ public class UserServiceImpl implements UserService {
 				()-> NotFoundUserException.EXCEPTION
 		);
 		return UserCachedInfoResponse.from(userInfo);
+	}
+
+	//Redis 성능 테스트를 위한 RDB 단일 조회
+	@Override
+	public UserSimpleResponse readUserTest(Long userId) {
+		User user = userReader.readByUserId(userId);
+		return UserSimpleResponse.fromUser(user);
 	}
 }

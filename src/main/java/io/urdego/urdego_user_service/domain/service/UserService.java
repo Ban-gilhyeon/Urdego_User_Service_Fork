@@ -21,6 +21,7 @@ public interface UserService {
 
 	List<UserSimpleResponse> readUserInfoList(List<Long> userIds);
 
+	UserSimpleResponse readUserTest(Long userId);
 	//update Nickname
 	UserResponse updateNickname(Long userId, String newNickname)throws OrtException;
 
