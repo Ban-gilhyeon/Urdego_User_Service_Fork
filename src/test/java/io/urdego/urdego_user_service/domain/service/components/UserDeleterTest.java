@@ -5,6 +5,8 @@ import io.urdego.urdego_user_service.domain.entity.User;
 import io.urdego.urdego_user_service.domain.entity.UserCharacter;
 import io.urdego.urdego_user_service.domain.repository.UserCharacterRepository;
 import io.urdego.urdego_user_service.domain.repository.UserRepository;
+import io.urdego.urdego_user_service.domain.service.UserCacheManager;
+import io.urdego.urdego_user_service.domain.service.UserEventHandler;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,6 +22,7 @@ class UserDeleterTest {
     @Mock private UserCharacterRepository userCharacterRepository;
 
     @Mock private UserReader userReader;
+    @Mock private UserCacheManager cacheManager;
 
     @InjectMocks
     private UserDeleter userDeleter;

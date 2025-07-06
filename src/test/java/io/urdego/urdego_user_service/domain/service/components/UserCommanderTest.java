@@ -10,6 +10,7 @@ import io.urdego.urdego_user_service.domain.entity.UserCharacter;
 import io.urdego.urdego_user_service.domain.repository.GameCharacterRepository;
 import io.urdego.urdego_user_service.domain.repository.UserCharacterRepository;
 import io.urdego.urdego_user_service.domain.repository.UserRepository;
+import io.urdego.urdego_user_service.domain.service.UserEventHandler;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,6 +33,7 @@ class UserCommanderTest {
     @Mock private UserValidator userValidator;
     @Mock private UserCharacterCommander userCharacterCommander;
     @Mock private LevelManager levelManager;
+    @Mock private UserEventHandler eventHandler;
 
     @InjectMocks
     private UserCommander userCommander;
@@ -70,6 +72,7 @@ class UserCommanderTest {
         //then
         //5 검증 및 확인
         User result = userCommander.signUp(request);
+
 
         //5.1 중복된 닉네임이 몇개 있는지 체크
         //검증

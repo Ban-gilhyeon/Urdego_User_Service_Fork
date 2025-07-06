@@ -2,6 +2,8 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.3.7'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'org.sonarqube' version'5.0.0.4638'
+	id 'jacoco'
 }
 
 
@@ -27,6 +29,26 @@ repositories {
 
 ext {
 	springCloudVersion = "2023.0.0"
+}
+
+sonarqube{
+	properties{
+		property "sonar.projectKey", "urdego"
+		property "sonar.host.url", "http://localhost:9000"
+		property "sonar.token", "sqa_8be6d999d8e0bd746cd9c1ccf18b3dbf0bcee5d3"
+		property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+	}
+}
+
+jacoco {
+	toolVersion = "0.8.10"
+}
+
+jacocoTestReport {
+	reports {
+		xml.required = true
+		html.required = true
+	}
 }
 
 dependencyManagement {
@@ -83,6 +105,9 @@ dependencies {
 
 	//Tokenizer DJL
 	implementation 'ai.djl.huggingface:tokenizers:0.31.1'
+
+	//SonarQube
+
 
 }
 
