@@ -98,7 +98,6 @@ class UserCommanderTest {
         //확인
         assertEquals(dummyUser.getNickname(), result.getNickname());
         assertEquals(dummyUser.getEmail(), result.getEmail());
-
     }
 
     /*
