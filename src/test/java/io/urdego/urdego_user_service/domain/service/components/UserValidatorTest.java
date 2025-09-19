@@ -7,6 +7,7 @@ import io.urdego.urdego_user_service.common.exception.user.InvalidNicknameUserEx
 import io.urdego.urdego_user_service.common.exception.userCharacter.DuplicatedCharacterUserException;
 import io.urdego.urdego_user_service.domain.entity.User;
 import io.urdego.urdego_user_service.infra.model.OnnxInference;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,9 +31,9 @@ class UserValidatorTest {
         //given
         String email = "test@gmail.com";
         PlatformType platformType = PlatformType.KAKAO;
+        when(userReader.existsByEmailAndPlatformType(email, platformType)).thenReturn(true);
 
         //when
-        when(userReader.existsByEmailAndPlatformType(email, platformType)).thenReturn(true);
         boolean result = userValidator.checkSignUpUser(email, platformType);
 
         //then
